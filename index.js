@@ -161,17 +161,7 @@ document.addEventListener("keydown", drawSnakeAtTurn);
 
 
 function drawSnakeAtTurn(event){
-    console.log("the draw snake function called again: ")
-    // let snakeBody = new Array(snakeLength);
-    let count = 0;
-    if (count == 7){
-        clearInterval(intervalID);
-    }
-    let intervalID = setInterval(() => {
-        console.log("the inner time interval function: count " + count);
-        count ++;
-    }, 1000/speed);
-
+    
 
     
     // snakeBody.forEach(bodyBlock, snakeBody => {
