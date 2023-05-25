@@ -1,55 +1,46 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext('2d');
 
+class snakePart{
+    constructor (x, y){
+        this.x = x;
+        this.y = y;
+    }
+}
 
 let speed = 7;
-let velocityX = 1;
+let velocityX = 0;
 let velocityY = 0;
 
 //making the game for a square canvas right now
 let canvasSize = canvas.width;
 let tileCount = 20;
 let tileSize = canvasSize/tileCount;
+let blockSize = tileSize - 2;
 
 //initial variables of the snake 
 let headX = tileCount/2;
 let headY = tileCount/2;
 let appleX = Math.floor((Math.random())*tileCount);
 let appleY = Math.floor((Math.random())*tileCount);
-let snakeLength = 1;
-let appleEaten = 0;
-
-
-// console.log("ctx width: " + ctx.width);
-// console.log( "tileCount" + tileCount);
-// console.log("headX" + headX);
-// console.log("headY" + headY);
-// console.log("canvasSize" + canvasSize);
-// console.log(headX);
-
+const snakeParts = [];
+let snakeLength = 2;
+let score = 0;
 
 //game loop
-let ctr = 0;
-
 let mainGameIntervalId = setInterval(() => {
     drawGame();
 }, 1000/speed);
-
 function drawGame(){
     clearScreen();
     drawSnake();
     drawInfo();
     moveSnake();
     drawApple();
-    drawSnakeAtTurn();
-    stopSnake();
-    console.log("showing the game before ctr++: " + ctr);
-    // setTimeout(drawGame, 1000/speed);
-    ctr  ++;
-    // console.log("showing the game after ctr ++ : " + ctr);
-    if(ctr == 5){
-        clearInterval(mainGameIntervalId);
+    if((wallTouch() || selfCrash()) && !(velocityX == 0 && velocityY == 0)){
+        gameOver();    
     }
+   
 }
 
 function clearScreen(){
@@ -58,8 +49,20 @@ function clearScreen(){
 }
 
 function drawSnake(){
+    
+    ctx.fillStyle = "green";
+    for(let i = 0; i < snakeParts.length; i++){
+        let part = snakeParts[i];
+        ctx.fillRect(part.x*tileSize, part.y*tileSize, blockSize, blockSize)
+    }
+    
+    snakeParts.push(new snakePart(headX, headY));
+    while (snakeParts.length > snakeLength){
+        snakeParts.shift();
+    }
+    
     ctx.fillStyle = 'orange';
-    ctx.fillRect(headX*(tileSize), headY*(tileSize), tileSize, tileSize);
+    ctx.fillRect(headX*(tileSize), headY*(tileSize), blockSize, blockSize);
 }
 
 function drawApple(){
@@ -67,21 +70,22 @@ function drawApple(){
     if (appleX == headX && appleY == headY){
         appleX = Math.floor((Math.random())*tileCount);
         appleY = Math.floor((Math.random())*tileCount);
-        appleEaten ++;
+        snakeLength ++;
+        score ++;
     }
-    ctx.fillRect(appleX*tileSize, appleY*tileSize, tileSize, tileSize);
+    ctx.fillRect(appleX*tileSize, appleY*tileSize, blockSize, blockSize);
 }
 
 function drawInfo(){
     ctx.fillStyle = "white";
-    ctx.fillText("headX: " + headX, (tileCount -3)*tileSize, 20, 100);
-    ctx.fillText("headY: " + headY, (tileCount -3)*tileSize, 30, 100);
-    ctx.fillText("velocityX:  " +  velocityX, (tileCount -3)*tileSize, 40, 100);
-    ctx.fillText("velocityY:  " +  velocityY, (tileCount -3)*tileSize, 50, 100);
-    ctx.fillText("appleX: " + appleX, (tileCount -3)*tileSize, 60, 100);
-    ctx.fillText("appleY: " + appleY, (tileCount -3)*tileSize, 70, 100);
-    ctx.fillText("snakeLength: " + snakeLength, (tileCount -3)*tileSize, 80, 100);
-
+    ctx.fillText("Score: " + score, (tileCount -3)*tileSize, 20, 100);
+    // ctx.fillText("headX: " + headX, (tileCount -3)*tileSize, 20, 100);
+    // ctx.fillText("headY: " + headY, (tileCount -3)*tileSize, 30, 100);
+    // ctx.fillText("velocityX:  " +  velocityX, (tileCount -3)*tileSize, 40, 100);
+    // ctx.fillText("velocityY:  " +  velocityY, (tileCount -3)*tileSize, 50, 100);
+    // ctx.fillText("appleX: " + appleX, (tileCount -3)*tileSize, 60, 100);
+    // ctx.fillText("appleY: " + appleY, (tileCount -3)*tileSize, 70, 100);
+    // ctx.fillText("snakeLength: " + snakeLength, (tileCount -3)*tileSize, 80, 100);
 }
 
 document.addEventListener("keydown", keyDown);
@@ -93,8 +97,7 @@ function keyDown(event){
         if(velocityX == 1){
             return;
         }
-        vprevX = velocityX;
-        vprevY = velocityY;
+
 
         velocityX = -1;
         velocityY = 0;
@@ -123,7 +126,6 @@ function keyDown(event){
 
     }
     
-
     //down arrow
     if (event.keyCode == 40){
         if(velocityY == -1){
@@ -141,54 +143,24 @@ function moveSnake() {
     headY += velocityY;
 }
 
-document.addEventListener("keydown", drawSnakeAtTurn);
-
-// function drawSnakeBody() {
-//     ctx.fillStyle = "green";
-//     snakeLength = appleEaten + 1;
-
-//     //case: when no arrow key is pressed
-//     let bodyX = headX - 2*velocityX;
-//     let bodyY = headY - 2*velocityY;
-
-//     for (let i = 1; i < snakeLength; i++){
-//         ctx.fillRect(bodyX*tileSize, bodyY*tileSize, tileSize, tileSize);
-//         bodyX -= velocityX;
-//         bodyY -= velocityY;
-//     }    
-// }
-
-
-
-function drawSnakeAtTurn(event){
-    
-
-    
-    // snakeBody.forEach(bodyBlock, snakeBody => {
-    //     if(event.keyCode == true){
-    //         let x = headX;
-    //         let y = headY;
-    //         let vfinalX = velocityX;
-    //         let vfinalY = velocityY;
-
-    //     }
-    //     if(bodyBlock.bodyX )
-    //     bodyBlock.vx = 
-    //     bodyBlock.vy = 
-    // })
-
-    // for()
+function wallTouch(){
+    if((headX == -1)|| (headX == (tileCount)) || (headY == -1 ) || (headY == (tileCount))){
+        return true;
+    }
+}
+function selfCrash(){
+    for (part of snakeParts){
+        if (headX == part.x && headY == part.y){
+            return true;
+        }
+    }
 }
 
-
-//IF I USE THE ARROW KEYS AFTER IT HAS STOPPED AT THE EDGE, THEN THE SNAKE WOULD MOVE AHEAD AGAIN ...CLEAR THE BUG LATER ON
-function stopSnake(){
-    if(headX == 0 || headX == (tileCount-1)){
-        velocityX = 0;
-    }
-    if(headY == 0 || headY == (tileCount - 1)){
-        velocityY = 0;
-    }
+function gameOver(){
+    clearInterval(mainGameIntervalId);
+    ctx.fillStyle = " white"
+    ctx.font = "100px Arial"
+    ctx.fillText("Game over", 0, tileCount*tileSize/2);
 }
 
 drawGame();
