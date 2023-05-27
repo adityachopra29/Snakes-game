@@ -19,3 +19,11 @@ h1{
 #game{
     box-shadow: 0px 0px 50px black;
 }
+
+#after-death{
+    position: absolute;
+    top: 60%;
+    left: 47%;
+    z-index: 1;
+    display: none;
+}

@@ -1,6 +1,8 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext('2d');
 
+let play_again_btn = document.getElementById("after-death");
+
 class snakePart{
     constructor (x, y){
         this.x = x;
@@ -31,6 +33,7 @@ let score = 0;
 let mainGameIntervalId = setInterval(() => {
     drawGame();
 }, 1000/speed);
+
 function drawGame(){
     clearScreen();
     drawSnake();
@@ -78,7 +81,8 @@ function drawApple(){
 
 function drawInfo(){
     ctx.fillStyle = "white";
-    ctx.fillText("Score: " + score, (tileCount -3)*tileSize, 20, 100);
+    ctx.font = "30px Arial"
+    ctx.fillText("Score: " + score, (tileCount -3)*tileSize, 50, 100);
     // ctx.fillText("headX: " + headX, (tileCount -3)*tileSize, 20, 100);
     // ctx.fillText("headY: " + headY, (tileCount -3)*tileSize, 30, 100);
     // ctx.fillText("velocityX:  " +  velocityX, (tileCount -3)*tileSize, 40, 100);
@@ -97,7 +101,6 @@ function keyDown(event){
         if(velocityX == 1){
             return;
         }
-
 
         velocityX = -1;
         velocityY = 0;
@@ -136,6 +139,7 @@ function keyDown(event){
         valid_keydown = true
 
     }
+
 }
 
 function moveSnake() {
@@ -156,11 +160,24 @@ function selfCrash(){
     }
 }
 
+play_again_btn.addEventListener("click", () => {
+    location.reload();
+} )
+
+document.addEventListener("keydown", (event) => {
+    if(event.keyCode == 13 && (wallTouch() || selfCrash()) && !(velocityX == 0 && velocityY == 0)){
+        location.reload();
+    }
+})
+
+
 function gameOver(){
     clearInterval(mainGameIntervalId);
     ctx.fillStyle = " white"
     ctx.font = "100px Arial"
-    ctx.fillText("Game over", 0, tileCount*tileSize/2);
+    ctx.fillText("Game over!!", canvas.width*(0.2), tileCount*tileSize/2);
+    play_again_btn.style.display = "block";
+
 }
 
 drawGame();
