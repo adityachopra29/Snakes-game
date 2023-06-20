@@ -21,5 +21,5 @@ document.addEventListener("keydown", (event) => {
 })
 
 function toGamePage(){
-    location.replace("../page2/index.html");
+    location.replace("./page2/index.html");
 }

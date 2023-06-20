@@ -11,7 +11,7 @@ class snakePart{
 }
 
 let speed = 7;
-let velocityX = 0;
+let velocityX = 0;false
 let velocityY = 0;
 
 //making the game for a square canvas right now
@@ -76,9 +76,23 @@ function drawApple(){
         snakeLength ++;
         score ++;
     }
-    ctx.fillRect(appleX*tileSize, appleY*tileSize, blockSize, blockSize);
+    let flag = false;
+    while(!flag){
+        let flagEach = true;
+        for(let snakePart in snakeParts){
+            if(snakePart.x == appleX && snakePart.y == appleY){
+                flagEach = false;
+            }
+        }
+        if(flagEach == false){
+            appleX = Math.floor((Math.random())*tileCount);
+            appleY = Math.floor((Math.random())*tileCount);
+        }else{
+            ctx.fillRect(appleX*(tileSize), appleY*(tileSize), blockSize, blockSize);
+            flag = true;
+        }
+    }
 }
-
 function drawInfo(){
     ctx.fillStyle = "white";
     ctx.font = "30px Arial"
